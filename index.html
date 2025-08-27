@@ -3,34 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elevents Test</title>
-  <style>
-    body { font-family: Arial; padding: 20px; background: #222; color: #eee; }
-    .event-card { border: 1px solid #555; padding: 10px; margin: 10px 0; border-radius: 5px; }
-    input, select, button { margin: 5px; padding:5px; }
-  </style>
+  <title>Elevents</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🎉 Elevents Test</h1>
+  <header>
+    <h1>🎉 Elevents</h1>
+  </header>
 
-  <section id="events">
-    <p>Events werden hier angezeigt.</p>
-  </section>
+  <main>
+    <section id="events">
+      <p>Events werden hier angezeigt.</p>
+    </section>
+  </main>
 
-  <h2>Neues Event hinzufügen</h2>
-  <form action="DEINE-API-URL" method="POST" target="hidden_iframe">
-    <input type="text" name="title" placeholder="Titel" required>
-    <input type="text" name="city" placeholder="Stadt" required>
-    <input type="date" name="date" required>
-    <input type="text" name="type" placeholder="Typ" required>
-    <input type="text" name="img" placeholder="Bild-URL (optional)">
-    <button type="submit">Speichern</button>
-  </form>
-
-  <iframe name="hidden_iframe" style="display:none;"></iframe>
+  <footer>
+    <h2>Neues Event hinzufügen</h2>
+    <form action="DEINE-API-URL" method="POST" target="hidden_iframe">
+      <input type="text" name="title" placeholder="Titel" required>
+      <input type="text" name="city" placeholder="Stadt" required>
+      <input type="date" name="date" required>
+      <input type="text" name="type" placeholder="Typ (Party, Konzert…)" required>
+      <input type="text" name="img" placeholder="Bild-URL (optional)">
+      <button type="submit">➕ Speichern</button>
+    </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
+  </footer>
 
   <script>
-    const API_URL = "DEINE-API-URL"; // /exec URL hier eintragen
+    const API_URL = "DEINE-API-URL"; // /exec Web-App URL eintragen
 
     async function loadEvents() {
       try {
@@ -62,7 +63,6 @@
       });
     }
 
-    // Formular zurücksetzen + Events nach Submit neu laden
     document.querySelector("form").addEventListener("submit", () => {
       setTimeout(() => {
         document.querySelector("form").reset();
@@ -70,7 +70,6 @@
       }, 500);
     });
 
-    // Seite laden → Events abrufen
     window.onload = loadEvents;
   </script>
 </body>
