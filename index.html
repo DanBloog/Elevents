@@ -9,40 +9,33 @@
 <body>
   <header>
     <h1>🎉 Elevents</h1>
-    <div class="search">
-      <input type="text" id="searchCity" placeholder="Stadt">
-      <input type="date" id="searchDate">
-      <select id="searchType">
-        <option value="">Alle Typen</option>
-        <option value="Party">Party</option>
-        <option value="Konzert">Konzert</option>
-        <option value="Festival">Festival</option>
-      </select>
-      <button onclick="loadEvents()">🔍 Suchen</button>
-    </div>
   </header>
 
   <main>
-    <section id="events"></section>
+    <section id="events">
+      <p>Events werden hier angezeigt.</p>
+    </section>
   </main>
 
   <footer>
     <h2>Neues Event hinzufügen</h2>
-    <form id="eventForm">
-      <input type="text" id="title" placeholder="Titel" required>
-      <input type="text" id="city" placeholder="Stadt" required>
-      <input type="date" id="date" required>
-      <input type="text" id="type" placeholder="Typ (Party, Konzert…)" required>
-      <input type="text" id="img" placeholder="Bild-URL (optional)">
+    <!-- Formular direkt an die Web-App URL senden -->
+    <form id="eventForm" action="DEINE-API-URL" method="POST" target="hidden_iframe">
+      <input type="text" name="title" placeholder="Titel" required>
+      <input type="text" name="city" placeholder="Stadt" required>
+      <input type="date" name="date" required>
+      <input type="text" name="type" placeholder="Typ (Party, Konzert…)" required>
+      <input type="text" name="img" placeholder="Bild-URL (optional)">
       <button type="submit">➕ Speichern</button>
     </form>
+    <!-- Unsichtbares iframe für POST -->
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
   </footer>
 
   <script>
-    // 🔹 DEINE Web-App-URL hier einfügen:
-    const API_URL = "https://script.google.com/macros/s/AKfycbyvQcoLec0ZXZ8Z5Or6KGmKjwuP5gOMvkZEUXB7CE-DZLSDR-CmC3PvyFTduo5zGEx6Ow/exec";
+    // Events laden per fetch (GET ist erlaubt)
+    const API_URL = "DEINE-API-URL"; // Hier die /exec URL eintragen
 
-    // Events laden
     async function loadEvents() {
       try {
         const response = await fetch(API_URL);
@@ -60,7 +53,6 @@
       }
     }
 
-    // Events anzeigen
     function renderEvents(events) {
       const container = document.getElementById("events");
       container.innerHTML = "";
@@ -78,40 +70,8 @@
       });
     }
 
-    // Neues Event speichern
-    async function saveEvent(event) {
-      event.preventDefault();
-      const newEvent = {
-        title: document.getElementById("title").value,
-        city: document.getElementById("city").value,
-        date: document.getElementById("date").value,
-        type: document.getElementById("type").value,
-        img: document.getElementById("img").value
-      };
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(newEvent)
-        });
-        const result = await res.json();
-        console.log("POST Ergebnis:", result);
-        document.getElementById("eventForm").reset();
-        loadEvents();
-      } catch (err) {
-        console.error("Fehler beim Speichern:", err);
-        alert("Event konnte nicht gespeichert werden!");
-      }
-    }
-
-    document.getElementById("eventForm").addEventListener("submit", saveEvent);
-
-    // Seite starten
-    loadEvents();
+    // Events beim Laden der Seite abrufen
+    window.onload = loadEvents;
   </script>
 </body>
 </html>
-
-
-
