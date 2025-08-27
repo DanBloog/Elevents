@@ -3,52 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elevents</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Elevents Test</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #222; color: #eee; }
+    .event-card { border: 1px solid #555; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    input, select, button { margin: 5px; padding:5px; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>🎉 Elevents</h1>
-  </header>
+  <h1>🎉 Elevents Test</h1>
 
-  <main>
-    <section id="events">
-      <p>Events werden hier angezeigt.</p>
-    </section>
-  </main>
+  <section id="events">
+    <p>Events werden hier angezeigt.</p>
+  </section>
 
-  <footer>
-    <h2>Neues Event hinzufügen</h2>
-    <!-- Formular direkt an die Web-App URL senden -->
-    <form id="eventForm" action="DEINE-API-URL" method="POST" target="hidden_iframe">
-      <input type="text" name="title" placeholder="Titel" required>
-      <input type="text" name="city" placeholder="Stadt" required>
-      <input type="date" name="date" required>
-      <input type="text" name="type" placeholder="Typ (Party, Konzert…)" required>
-      <input type="text" name="img" placeholder="Bild-URL (optional)">
-      <button type="submit">➕ Speichern</button>
-    </form>
-    <!-- Unsichtbares iframe für POST -->
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
-  </footer>
+  <h2>Neues Event hinzufügen</h2>
+  <form action="DEINE-API-URL" method="POST" target="hidden_iframe">
+    <input type="text" name="title" placeholder="Titel" required>
+    <input type="text" name="city" placeholder="Stadt" required>
+    <input type="date" name="date" required>
+    <input type="text" name="type" placeholder="Typ" required>
+    <input type="text" name="img" placeholder="Bild-URL (optional)">
+    <button type="submit">Speichern</button>
+  </form>
+
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
 
   <script>
-    // Events laden per fetch (GET ist erlaubt)
-    const API_URL = "https://script.google.com/macros/s/AKfycbybJK66o7dxZsdvtkgbQlSAHQ8lWV5Z164tlm4G67g8KwCPE4Gk8Or-AeJ1q_diDFbXWQ/exec"; // Hier die /exec URL eintragen
+    const API_URL = "DEINE-API-URL"; // /exec URL hier eintragen
 
     async function loadEvents() {
       try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
+        const res = await fetch(API_URL);
+        const data = await res.json();
         const events = data.slice(1).map(row => ({
-          title: row[0],
-          city: row[1],
-          date: row[2],
-          type: row[3],
-          img: row[4]
+          title: row[0], city: row[1], date: row[2], type: row[3], img: row[4]
         }));
         renderEvents(events);
-      } catch (err) {
+      } catch(err) {
         console.error("Fehler beim Laden:", err);
       }
     }
@@ -64,15 +56,22 @@
           <p>📍 ${ev.city}</p>
           <p>📅 ${ev.date}</p>
           <p>🎭 ${ev.type}</p>
-          ${ev.img ? `<img src="${ev.img}" alt="${ev.title}" style="max-width:200px;">` : ""}
+          ${ev.img ? `<img src="${ev.img}" alt="${ev.title}" style="max-width:150px;">` : ""}
         `;
         container.appendChild(card);
       });
     }
 
-    // Events beim Laden der Seite abrufen
+    // Formular zurücksetzen + Events nach Submit neu laden
+    document.querySelector("form").addEventListener("submit", () => {
+      setTimeout(() => {
+        document.querySelector("form").reset();
+        loadEvents();
+      }, 500);
+    });
+
+    // Seite laden → Events abrufen
     window.onload = loadEvents;
   </script>
 </body>
 </html>
-
