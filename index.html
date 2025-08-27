@@ -4,12 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elevents</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial; background:#121212; color:#eee; margin:0; padding:20px; }
+    header h1 { text-align:center; margin-bottom:20px; }
+    #events { display:flex; flex-direction:column; gap:15px; }
+    .event-card { background:#1e1e1e; border:1px solid #333; border-radius:10px; padding:15px; transition:0.2s; }
+    .event-card:hover { transform:translateY(-3px); box-shadow:0 4px 15px rgba(0,0,0,0.5); }
+    .event-card h3 { color:#ffcc00; margin-top:0; }
+    .event-card img { max-width:100%; border-radius:5px; margin-top:10px; }
+    form { display:flex; flex-wrap:wrap; gap:10px; margin-top:15px; }
+    form input, form select, form button { padding:10px; border-radius:5px; border:none; }
+    form input, form select { flex:1 1 150px; background:#2c2c2c; color:#eee; }
+    form input::placeholder { color:#aaa; }
+    form button { flex:1 1 100px; background:#ffcc00; color:#121212; cursor:pointer; transition:0.2s; }
+    form button:hover { background:#e6b800; }
+    @media(max-width:600px){form{flex-direction:column;}form input, form select, form button{flex:1 1 100%;}}
+  </style>
 </head>
 <body>
-  <header>
-    <h1>🎉 Elevents</h1>
-  </header>
+  <header><h1>🎉 Elevents</h1></header>
 
   <main>
     <section id="events">
@@ -19,60 +32,47 @@
 
   <footer>
     <h2>Neues Event hinzufügen</h2>
-    <!-- Formular POST direkt an die /exec Web-App URL -->
-    <form action="DEINE-EXEC-URL" method="POST" target="hidden_iframe">
-      <input type="text" name="title" placeholder="Titel" required>
-      <input type="text" name="city" placeholder="Stadt" required>
-      <input type="date" name="date" required>
-      <input type="text" name="type" placeholder="Typ (Party, Konzert…)" required>
-      <input type="text" name="img" placeholder="Bild-URL (optional)">
+    <form id="eventForm">
+      <input type="text" id="title" placeholder="Titel" required>
+      <input type="text" id="city" placeholder="Stadt" required>
+      <input type="date" id="date" required>
+      <input type="text" id="type" placeholder="Typ" required>
+      <input type="text" id="img" placeholder="Bild-URL (optional)">
       <button type="submit">➕ Speichern</button>
     </form>
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
   </footer>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyTopNlpEISyT7R-XHXlBwjfBRcb_PFTc7RrCwesbxvmV_vPJAupyYM0y0Vt2TJ5NZG5g/exec"; // /exec Web-App URL eintragen
-
-    async function loadEvents() {
-      try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        const events = data.slice(1).map(row => ({
-          title: row[0], city: row[1], date: row[2], type: row[3], img: row[4]
-        }));
-        renderEvents(events);
-      } catch(err) {
-        console.error("Fehler beim Laden:", err);
-      }
+    function loadEvents() {
+      google.script.run.withSuccessHandler(renderEvents).getEvents();
     }
 
     function renderEvents(events) {
       const container = document.getElementById("events");
       container.innerHTML = "";
-      events.forEach(ev => {
-        const card = document.createElement("div");
-        card.className = "event-card";
-        card.innerHTML = `
-          <h3>${ev.title}</h3>
-          <p>📍 ${ev.city}</p>
-          <p>📅 ${ev.date}</p>
-          <p>🎭 ${ev.type}</p>
-          ${ev.img ? `<img src="${ev.img}" alt="${ev.title}" style="max-width:150px;">` : ""}
-        `;
+      if(events.length === 0){container.innerHTML="<p>Keine Events vorhanden.</p>";return;}
+      events.forEach(ev=>{
+        const card=document.createElement("div");
+        card.className="event-card";
+        card.innerHTML=`<h3>${ev.title}</h3><p>📍 ${ev.city}</p><p>📅 ${ev.date}</p><p>🎭 ${ev.type}</p>${ev.img?`<img src="${ev.img}" alt="${ev.title}">`:``}`;
         container.appendChild(card);
       });
     }
 
-    document.querySelector("form").addEventListener("submit", () => {
-      setTimeout(() => {
-        document.querySelector("form").reset();
+    document.getElementById("eventForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const t=document.getElementById("title").value;
+      const c=document.getElementById("city").value;
+      const d=document.getElementById("date").value;
+      const ty=document.getElementById("type").value;
+      const i=document.getElementById("img").value;
+      google.script.run.withSuccessHandler(()=>{
+        document.getElementById("eventForm").reset();
         loadEvents();
-      }, 500);
+      }).addEvent(t,c,d,ty,i);
     });
 
-    window.onload = loadEvents;
+    window.onload=loadEvents;
   </script>
 </body>
 </html>
-
