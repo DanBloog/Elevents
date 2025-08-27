@@ -1,123 +1,104 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elevents</title>
-<style>
-:root {
-  --bg: #f8f8f8;
-  --text: #333;
-  --card-bg: #fff;
-  --accent: #ff0055;
-  --accent2: #ff6600;
-}
-body.dark {
-  --bg: #121212;
-  --text: #eee;
-  --card-bg: #1e1e1e;
-  --accent: #ff6699;
-  --accent2: #ff8844;
-}
-* { box-sizing: border-box; }
-body { margin:0; font-family: Arial,sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s,color 0.3s;}
-header { background: linear-gradient(135deg, var(--accent), var(--accent2)); color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;}
-header .brand { display:flex; align-items:center; gap:10px; }
-header img.logo { height:40px; }
-header h1 { margin:0; font-size:1.5rem;}
-.dark-toggle { cursor:pointer; font-size:1.4rem; background:transparent; border:none; color:white;}
-.search-box { background: var(--card-bg); padding:20px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-.search-box input, .search-box select, .search-box button { padding:10px; font-size:16px; border:1px solid #ddd; border-radius:5px; background: var(--bg); color: var(--text);}
-.search-box button { background: var(--accent); color:white; border:none;}
-.event-list { max-width:1000px; margin:30px auto; display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:20px; padding:0 15px;}
-.event { background: var(--card-bg); border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1); display:flex; flex-direction:column; transition: background 0.3s,color 0.3s;}
-.event img { width:100%; height:160px; object-fit:cover;}
-.event-content { padding:15px; flex:1;}
-.event h3 { margin:0 0 10px; color: var(--accent);}
-.event p { margin:5px 0;}
-.add-event { max-width:600px; margin:40px auto; background: var(--card-bg); padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-.add-event h2 { margin-top:0; color: var(--accent2);}
-.add-event input, .add-event select, .add-event button { width:100%; margin:8px 0; padding:10px; border:1px solid #ddd; border-radius:5px; background: var(--bg); color: var(--text);}
-.add-event button { background: var(--accent2); color:white; border:none;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevents</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-<div class="brand">
-<img src="logo.png" alt="Logo" class="logo">
-<h1>Elevents</h1>
-</div>
-<button class="dark-toggle" id="darkToggle">🌙</button>
-</header>
-<div class="search-box">
-<input type="text" id="city" placeholder="Stadt">
-<input type="date" id="date">
-<select id="type">
-<option value="">Alle Arten</option>
-<option value="Konzert">Konzert</option>
-<option value="Club">Club</option>
-<option value="Festival">Festival</option>
-</select>
-<button id="searchBtn">Suchen</button>
-</div>
-<div class="event-list" id="eventList"></div>
-<div class="add-event">
-<h2>➕ Neues Event eintragen</h2>
-<input type="text" id="newTitle" placeholder="Titel">
-<input type="text" id="newCity" placeholder="Stadt">
-<input type="date" id="newDate">
-<select id="newType">
-<option value="Konzert">Konzert</option>
-<option value="Club">Club</option>
-<option value="Festival">Festival</option>
-</select>
-<input type="text" id="newImg" placeholder="Bild-URL (optional)">
-<button id="addBtn">Event speichern</button>
-</div>
-<script>
-var events = JSON.parse(localStorage.getItem("events")) || [
-  { title: "Techno Night", city: "Berlin", date: "2025-09-15", type: "Club", img: "https://picsum.photos/id/29/400/200" },
-  { title: "Open Air Festival", city: "Hamburg", date: "2025-09-20", type: "Festival", img: "https://picsum.photos/id/1011/400/200" },
-  { title: "Rock Konzert", city: "München", date: "2025-09-25", type: "Konzert", img: "https://picsum.photos/id/237/400/200" }
-];
-function saveEvents(){ localStorage.setItem("events",JSON.stringify(events)); }
-function renderEvents(list){
-  var container = document.getElementById("eventList"); container.innerHTML="";
-  if(list.length===0){ container.innerHTML="<p>Keine Events gefunden.</p>"; return;}
-  for(var i=0;i<list.length;i++){
-    var ev=list[i]; var div=document.createElement("div"); div.className="event";
-    div.innerHTML='<img src="'+(ev.img||"https://picsum.photos/400/200")+'" alt="Event Bild"><div class="event-content"><h3>'+ev.title+'</h3><p>📍 '+ev.city+'</p><p>📅 '+ev.date+'</p><p>🎵 '+ev.type+'</p></div>';
-    container.appendChild(div);
-  }
-}
-function searchEvents(){
-  var city=document.getElementById("city").value.toLowerCase();
-  var date=document.getElementById("date").value;
-  var type=document.getElementById("type").value;
-  var filtered=events.filter(function(ev){
-    return (city==="" || ev.city.toLowerCase().includes(city)) &&
-           (date==="" || ev.date===date) &&
-           (type==="" || ev.type===type);
-  });
-  renderEvents(filtered);
-}
-function addEvent(){
-  var title=document.getElementById("newTitle").value;
-  var city=document.getElementById("newCity").value;
-  var date=document.getElementById("newDate").value;
-  var type=document.getElementById("newType").value;
-  var img=document.getElementById("newImg").value;
-  if(title && city && date && type){
-    events.push({title:title,city:city,date:date,type:type,img:img});
-    saveEvents(); renderEvents(events); alert("Event hinzugefügt!");
-  }else{ alert("Bitte alle Felder ausfüllen!"); }
-}
-document.getElementById("darkToggle").addEventListener("click",function(){
-document.body.classList.toggle("dark"); this.textContent=document.body.classList.contains("dark")?"🌞":"🌙";
-});
-document.getElementById("searchBtn").addEventListener("click",searchEvents);
-document.getElementById("addBtn").addEventListener("click",addEvent);
-renderEvents(events);
-</script>
+  <header>
+    <h1>🎉 Elevents</h1>
+    <div class="search">
+      <input type="text" id="searchCity" placeholder="Stadt">
+      <input type="date" id="searchDate">
+      <select id="searchType">
+        <option value="">Alle Typen</option>
+        <option value="Party">Party</option>
+        <option value="Konzert">Konzert</option>
+        <option value="Festival">Festival</option>
+      </select>
+      <button onclick="loadEvents()">🔍 Suchen</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="events"></section>
+  </main>
+
+  <footer>
+    <h2>Neues Event hinzufügen</h2>
+    <form id="eventForm">
+      <input type="text" id="title" placeholder="Titel" required>
+      <input type="text" id="city" placeholder="Stadt" required>
+      <input type="date" id="date" required>
+      <input type="text" id="type" placeholder="Typ (Party, Konzert…)" required>
+      <input type="text" id="img" placeholder="Bild-URL (optional)">
+      <button type="submit">➕ Speichern</button>
+    </form>
+  </footer>
+
+  <script>
+    // 👉 HIER deine Web-App-URL einfügen:
+    const API_URL = "https://script.google.com/macros/s/AKfycbzbuLNuD8B15uYQsdTjuGOin8t0SUNs7YM5KBWm12OwO4RK4fypKPM39Ib7nNp5CFafhw/exec";
+
+    async function loadEvents() {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+
+      // Erste Zeile = Spaltenüberschriften → ab Zeile 2 starten
+      const events = data.slice(1).map(row => ({
+        title: row[0],
+        city: row[1],
+        date: row[2],
+        type: row[3],
+        img: row[4]
+      }));
+
+      renderEvents(events);
+    }
+
+    function renderEvents(events) {
+      const container = document.getElementById("events");
+      container.innerHTML = "";
+      events.forEach(ev => {
+        const card = document.createElement("div");
+        card.className = "event-card";
+        card.innerHTML = `
+          <h3>${ev.title}</h3>
+          <p>📍 ${ev.city}</p>
+          <p>📅 ${ev.date}</p>
+          <p>🎭 ${ev.type}</p>
+          ${ev.img ? `<img src="${ev.img}" alt="${ev.title}" style="max-width:200px;">` : ""}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function saveEvent(event) {
+      event.preventDefault();
+      const newEvent = {
+        title: document.getElementById("title").value,
+        city: document.getElementById("city").value,
+        date: document.getElementById("date").value,
+        type: document.getElementById("type").value,
+        img: document.getElementById("img").value
+      };
+
+      await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(newEvent),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      document.getElementById("eventForm").reset();
+      loadEvents();
+    }
+
+    document.getElementById("eventForm").addEventListener("submit", saveEvent);
+
+    // Seite starten mit Events laden
+    loadEvents();
+  </script>
 </body>
 </html>
