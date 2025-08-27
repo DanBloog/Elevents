@@ -19,7 +19,8 @@
 
   <footer>
     <h2>Neues Event hinzufügen</h2>
-    <form action="DEINE-API-URL" method="POST" target="hidden_iframe">
+    <!-- Formular POST direkt an die /exec Web-App URL -->
+    <form action="DEINE-EXEC-URL" method="POST" target="hidden_iframe">
       <input type="text" name="title" placeholder="Titel" required>
       <input type="text" name="city" placeholder="Stadt" required>
       <input type="date" name="date" required>
@@ -31,7 +32,7 @@
   </footer>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyTopNlpEISyT7R-XHXlBwjfBRcb_PFTc7RrCwesbxvmV_vPJAupyYM0y0Vt2TJ5NZG5g/exec"; // /exec Web-App URL eintragen
+    const API_URL = "DEINE-EXEC-URL"; // /exec Web-App URL eintragen
 
     async function loadEvents() {
       try {
@@ -74,4 +75,3 @@
   </script>
 </body>
 </html>
-
