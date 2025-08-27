@@ -39,25 +39,28 @@
   </footer>
 
   <script>
-    // 👉 HIER deine Web-App-URL einfügen:
+    // 🔹 DEINE Web-App-URL hier einfügen:
     const API_URL = "https://script.google.com/macros/s/AKfycby0yAp4_LIkH_nLnnV1NxSVryI2CJ8o-r0aLx9zu_2xuAvLBNaHNZ5nhirqRuYffdrJMw/exec";
 
+    // Events laden
     async function loadEvents() {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-
-      // Erste Zeile = Spaltenüberschriften → ab Zeile 2 starten
-      const events = data.slice(1).map(row => ({
-        title: row[0],
-        city: row[1],
-        date: row[2],
-        type: row[3],
-        img: row[4]
-      }));
-
-      renderEvents(events);
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        const events = data.slice(1).map(row => ({
+          title: row[0],
+          city: row[1],
+          date: row[2],
+          type: row[3],
+          img: row[4]
+        }));
+        renderEvents(events);
+      } catch (err) {
+        console.error("Fehler beim Laden:", err);
+      }
     }
 
+    // Events anzeigen
     function renderEvents(events) {
       const container = document.getElementById("events");
       container.innerHTML = "";
@@ -75,6 +78,7 @@
       });
     }
 
+    // Neues Event speichern
     async function saveEvent(event) {
       event.preventDefault();
       const newEvent = {
@@ -85,24 +89,26 @@
         img: document.getElementById("img").value
       };
 
-      await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify(newEvent),
-        headers: { "Content-Type": "application/json" }
-      });
-
-      document.getElementById("eventForm").reset();
-      loadEvents();
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(newEvent)
+        });
+        const result = await res.json();
+        console.log("POST Ergebnis:", result);
+        document.getElementById("eventForm").reset();
+        loadEvents();
+      } catch (err) {
+        console.error("Fehler beim Speichern:", err);
+        alert("Event konnte nicht gespeichert werden!");
+      }
     }
 
     document.getElementById("eventForm").addEventListener("submit", saveEvent);
 
-    // Seite starten mit Events laden
+    // Seite starten
     loadEvents();
   </script>
 </body>
 </html>
-
-
-
-
